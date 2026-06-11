@@ -7,9 +7,17 @@ const PORT = 5001;
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.get('/api/questions', (_req, res) => {
-  const questions = generateQuestions(50);
-  res.json({ questions });
+app.get('/api/questions', (req, res) => {
+  const countParam = req.query.count;
+  let count = 50;
+  if (countParam) {
+    const parsed = parseInt(countParam as string, 10);
+    if ([20, 50, 100].includes(parsed)) {
+      count = parsed;
+    }
+  }
+  const questions = generateQuestions(count);
+  res.json({ questions, total: count });
 });
 
 app.get('*', (_req, res) => {

@@ -11,12 +11,14 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayMsg = document.getElementById('overlay-msg');
 const startBtn = document.getElementById('start-btn');
+const countBtns = document.querySelectorAll('.count-btn');
 const MAX_HP = 5;
 let hp = MAX_HP;
 let score = 0;
 let currentIndex = 0;
 let questions = [];
 let isLocked = false;
+let selectedCount = 50;
 let particles = [];
 let warrior;
 let monster;
@@ -269,7 +271,8 @@ function updateHUD() {
     hpBar.style.width = pct + '%';
     hpText.textContent = `❤️ ${hp} / ${MAX_HP}`;
     scoreText.textContent = `🏆 ${score}`;
-    progressText.textContent = `${currentIndex} / ${questions.length}`;
+    const total = questions.length > 0 ? questions.length : selectedCount;
+    progressText.textContent = `${currentIndex} / ${total}`;
 }
 function showQuestion() {
     if (currentIndex >= questions.length) {
@@ -291,8 +294,8 @@ function showQuestion() {
     monster.hitFlash = 0;
     isLocked = false;
 }
-async function fetchQuestions() {
-    const res = await fetch('/api/questions');
+async function fetchQuestions(count) {
+    const res = await fetch(`/api/questions?count=${count}`);
     const data = await res.json();
     return data.questions;
 }
@@ -306,7 +309,7 @@ async function startGame() {
     initPositions();
     updateHUD();
     try {
-        questions = await fetchQuestions();
+        questions = await fetchQuestions(selectedCount);
     }
     catch {
         overlay.classList.remove('hidden');
@@ -379,6 +382,13 @@ function handleAnswer(idx) {
 }
 optionBtns.forEach((btn, i) => {
     btn.addEventListener('click', () => handleAnswer(i));
+});
+countBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        countBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedCount = parseInt(btn.dataset.count || '50', 10);
+    });
 });
 startBtn.addEventListener('click', startGame);
 gameLoop();

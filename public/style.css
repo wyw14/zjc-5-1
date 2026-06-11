@@ -170,3 +170,48 @@ html, body {
 
 #start-btn:hover { transform: scale(1.05); }
 #start-btn:active { transform: scale(0.98); }
+
+#question-count-select {
+  margin-bottom: 24px;
+}
+
+.select-label {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.count-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.count-btn {
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px solid #4a6fa5;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1a3a5c, #0f2b4a);
+  color: #eee;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.count-btn:hover {
+  background: linear-gradient(135deg, #2a5a8c, #1a4a6a);
+  border-color: #6a9fd8;
+  transform: translateY(-2px);
+}
+
+.count-btn:active {
+  transform: translateY(0);
+}
+
+.count-btn.active {
+  background: linear-gradient(135deg, #f5c542, #e0a800);
+  border-color: #f5c542;
+  color: #1a1a2e;
+  box-shadow: 0 0 15px rgba(245, 197, 66, 0.4);
+}

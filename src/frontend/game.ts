@@ -17,6 +17,7 @@ const overlay = document.getElementById('overlay')!;
 const overlayTitle = document.getElementById('overlay-title')!;
 const overlayMsg = document.getElementById('overlay-msg')!;
 const startBtn = document.getElementById('start-btn')!;
+const countBtns = document.querySelectorAll('.count-btn') as NodeListOf<HTMLButtonElement>;
 
 const MAX_HP = 5;
 let hp = MAX_HP;
@@ -24,6 +25,7 @@ let score = 0;
 let currentIndex = 0;
 let questions: Question[] = [];
 let isLocked = false;
+let selectedCount = 50;
 
 interface Particle { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number; }
 let particles: Particle[] = [];
@@ -321,7 +323,8 @@ function updateHUD() {
   hpBar.style.width = pct + '%';
   hpText.textContent = `❤️ ${hp} / ${MAX_HP}`;
   scoreText.textContent = `🏆 ${score}`;
-  progressText.textContent = `${currentIndex} / ${questions.length}`;
+  const total = questions.length > 0 ? questions.length : selectedCount;
+  progressText.textContent = `${currentIndex} / ${total}`;
 }
 
 function showQuestion() {
@@ -349,8 +352,8 @@ function showQuestion() {
   isLocked = false;
 }
 
-async function fetchQuestions(): Promise<Question[]> {
-  const res = await fetch('/api/questions');
+async function fetchQuestions(count: number): Promise<Question[]> {
+  const res = await fetch(`/api/questions?count=${count}`);
   const data = await res.json();
   return data.questions;
 }
@@ -366,7 +369,7 @@ async function startGame() {
   updateHUD();
 
   try {
-    questions = await fetchQuestions();
+    questions = await fetchQuestions(selectedCount);
   } catch {
     overlay.classList.remove('hidden');
     overlayTitle.textContent = '出错了';
@@ -444,6 +447,14 @@ function handleAnswer(idx: number) {
 
 optionBtns.forEach((btn, i) => {
   btn.addEventListener('click', () => handleAnswer(i));
+});
+
+countBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    countBtns.forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCount = parseInt(btn.dataset.count || '50', 10);
+  });
 });
 
 startBtn.addEventListener('click', startGame);
